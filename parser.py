@@ -11,6 +11,7 @@ inputFileLines = []
 with open(inputFileName) as inputFileObject:
     for line in inputFileObject:
         inputFileLines.append(line.rstrip())
+        print(dfsdfsdfd)
 #---------------------------------------------
 
 # READ CONFIG FILE----------------------------
@@ -27,7 +28,7 @@ configFileLines.reverse()
 
 # ANALYZE CONFIG FILE--------------------------------------------------------------------------------
 
-class Token(): 
+class Token():
     # Token data
     isTerminal = False
     configFileLine = ""
@@ -42,7 +43,7 @@ class Token():
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
     'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    "veliki_grad" = 
+    'veliki_grad' =
     }
 
     def __init__(self, configFileLine):
@@ -67,6 +68,7 @@ class Token():
                 #Now we have to form regular expression of this special kind of token
                 matchObject = re.search("(?<=\().+?(?=\))", self.configFileLine)
                 self.regularExpression = matchObject.group(0)
+
             else:
                 #now we have to form a list of nonterminal token expressions
                 matchObject = re.findall(self.regexNonTerminalTokenExpression, self.configFileLine )
