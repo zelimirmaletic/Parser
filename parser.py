@@ -11,7 +11,6 @@ inputFileLines = []
 with open(inputFileName) as inputFileObject:
     for line in inputFileObject:
         inputFileLines.append(line.rstrip())
-        print(dfsdfsdfd)
 #---------------------------------------------
 
 # READ CONFIG FILE----------------------------
