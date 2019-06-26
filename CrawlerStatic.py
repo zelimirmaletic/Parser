@@ -14,7 +14,6 @@ class Crawler:
             cols=row.find_all('td')
             cols=[x.text.strip() for x in cols]
             self.citiesList.append(cols[1])
-        return self.citiesList
 
     def printList(self):
         for item in self.citiesList:
@@ -26,10 +25,10 @@ class Crawler:
             if index != len(self.citiesList)-1:
                 self.regex+='|'
 
-#TESTING CODE
-myCrawler = Crawler()
-myCrawler.scrapeWebLink()
+# ----------TESTING CODE---------
+#myCrawler = Crawler()
+#myCrawler.scrapeWebLink()
 #myCrawler.printList()
-myCrawler.formRegex()
-print('Extracted regex:')
-print(myCrawler.regex)
+#myCrawler.formRegex()
+#print('Extracted regex:')
+#print(myCrawler.regex)

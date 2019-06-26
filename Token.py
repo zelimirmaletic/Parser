@@ -1,4 +1,20 @@
 import re
+from CrawlerStatic import Crawler
+
+#Scrape web site and form regex for veliki_grad token
+myCrawler = Crawler()
+myCrawler.scrapeWebLink()
+myCrawler.formRegex()
+#After this line we have formed regular expression for matching big cities
+
+#Dictionary for predefined expressions from the given table
+tableRegex = {
+    'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
+    'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
+    'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
+    'brojevna_konstanta' : "(\d)*(\.\d*)*",
+    'veliki_grad' : myCrawler.regex,
+}
 
 
 class Token():
@@ -11,14 +27,6 @@ class Token():
 
     regexTokenName = "(?!<)\w+(?=>)"
     regexNonTerminalTokenExpression = "(?!'| )\w+(?='|)"
-    #Dictionary for predefined expressions from given table
-    tableRegex = {
-    'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
-    'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
-    'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
-    'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    'veliki_grad' : '',
-    }
 
     def __init__(self, configFileLine):
         self.configFileLine = configFileLine
