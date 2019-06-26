@@ -1,10 +1,11 @@
 import re
 from CrawlerStatic import Crawler
+import sys
 
 #Scrape web site and form regex for veliki_grad token
-myCrawler = Crawler()
-myCrawler.scrapeWebLink()
-myCrawler.formRegex()
+#myCrawler = Crawler()
+#myCrawler.scrapeWebLink()
+#myCrawler.formRegex()
 #After this line we have formed regular expression for matching big cities
 
 #Dictionary for predefined expressions from the given table
@@ -13,7 +14,7 @@ tableRegex = {
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
     'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    'veliki_grad' : myCrawler.regex,
+    #'veliki_grad' : myCrawler.regex,
 }
 
 
@@ -31,7 +32,7 @@ class Token():
     def __init__(self, configFileLine):
         self.configFileLine = configFileLine
 
-    def decomposeConfigLine(self):
+    def formToken(self):
         # Determine token name
         matchObject = re.search(self.regexTokenName, self.configFileLine)
         self.tokenName = matchObject.group(0)
@@ -62,12 +63,29 @@ class Token():
                     if index!=numberOfMatches-1:
                         self.regularExpression+="|"
 
-        #If not terminal then it's a terminal, this means that it has some subtokens
+        #If not terminal then it's a nonterminal, this means that it has some subtokens
         else:
             #We have to form list of subtokens inside this token
             matchObject = re.findall(self.regexTokenName,self.configFileLine)
             for match in matchObject:
                 self.subTokens.append(match)
-            del self.subTokens[0] #we dont need the name of first token
+            del self.subTokens[0] #we don't need the name of first token
             #Wen cannot form regular expressions for nonterminals at this point.
             #There will be another class that will have method to form these RegExes
+            #THIS PARSER DOES NOT SUPPORT RECCURSIVE DEFINITION
+            #So we have to check that:
+            for item in self.subTokens:
+                if self.tokenName == item:
+                    print('**************** ERROR ********************')
+                    print('Reccursive definition found in config file.')
+                    print('This parser DOES NOT support reccursive de-')
+                    print('finitions, therefore is unable to continue ')
+                    print('parsing. Terminating program execution...  ')
+                    print('*******************************************')
+                    sys.exit()
+
+token = Token('<that> := <cat><bat><fat<that>')
+token.formToken()
+print(token.subTokens)
+print(token.tokenName)
+print(token.regularExpression)

@@ -14,6 +14,8 @@ class Crawler:
             cols=row.find_all('td')
             cols=[x.text.strip() for x in cols]
             self.citiesList.append(cols[1])
+        # We will sort list for better performance in later search
+        self.citiesList.sort()
 
     def printList(self):
         for item in self.citiesList:
