@@ -21,6 +21,7 @@ tableRegex = {
 class Token():
     # Token data
     isTerminal = False
+    isTableExpression = False
     configFileLine = ""
     tokenName = ""
     subTokens = []
@@ -44,14 +45,16 @@ class Token():
             # Here the lists subToken stays empty
 
             # We have to check wether a token is of a special form AKA one from the given table
+            matchObject1=re.search("regex\(", self.configFileLine)
+            matchObject2=re.search("standardni_izraz", self.configFileLine)
 
-            # REGEX(.....)
-            matchObject=re.search("regex\(", self.configFileLine)
-            if matchObject!= None:
+            if matchObject1!= None:
                 #Now we have to form regular expression of this special kind of token
                 matchObject = re.search("(?<=\().+?(?=\))", self.configFileLine)
                 self.regularExpression = matchObject.group(0)
-
+            elif matchObject2 != None:
+                #This one is of special kind, and parser will resolve it's regex
+                self.isTableExpression = True
             else:
                 #now we have to form a list of nonterminal token expressions
                 matchObject = re.findall(self.regexNonTerminalTokenExpression, self.configFileLine )
@@ -66,10 +69,11 @@ class Token():
         #If not terminal then it's a nonterminal, this means that it has some subtokens
         else:
             #We have to form list of subtokens inside this token
-            matchObject = re.findall(self.regexTokenName,self.configFileLine)
-            for match in matchObject:
-                self.subTokens.append(match)
-            del self.subTokens[0] #we don't need the name of first token
+            matches = re.findall(self.regexTokenName,self.configFileLine)
+            del matches[0]
+            print(matches)
+            self.subTokens = matches[:]
+            #we don't need the name of first token
             #Wen cannot form regular expressions for nonterminals at this point.
             #There will be another class that will have method to form these RegExes
             #THIS PARSER DOES NOT SUPPORT RECCURSIVE DEFINITION
@@ -84,8 +88,12 @@ class Token():
                     print('*******************************************')
                     sys.exit()
 
-token = Token('<that> := <cat><bat><fat<that>')
-token.formToken()
-print(token.subTokens)
-print(token.tokenName)
-print(token.regularExpression)
+#Testing class:
+#token = Token('<digits> := <mellon><partenon>')
+#token.formToken()
+#print('Is table expression: ' + str(token.isTableExpression))
+#print('Is terminal expression: ' + str(token.isTerminal))
+#print('Subtokens: ')
+#print(token.subTokens)
+#print('Name: ' + token.tokenName)
+#print('Regular expression: ' + token.regularExpression)
