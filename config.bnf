@@ -1,7 +1,8 @@
 <sentence> := <subject> <predicate>
-<subject> := <article> <noun>
-<predicate> := <verb> <directObject> 
+<subject> := <article> <noun> <subject>
+<predicate> := <verb> <directObject>
 <directObject> ::= <article> <noun>
+<tabela> := standardni_izraz
 <article> := THE | A
 <noun> := MAN | DOG
 <verb> := BITES | PETS

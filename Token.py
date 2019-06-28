@@ -1,21 +1,6 @@
 import re
-from CrawlerStatic import Crawler
 import sys
 
-#Scrape web site and form regex for veliki_grad token
-#myCrawler = Crawler()
-#myCrawler.scrapeWebLink()
-#myCrawler.formRegex()
-#After this line we have formed regular expression for matching big cities
-
-#Dictionary for predefined expressions from the given table
-tableRegex = {
-    'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
-    'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
-    'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
-    'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    #'veliki_grad' : myCrawler.regex,
-}
 
 
 class Token():
@@ -53,7 +38,7 @@ class Token():
                 matchObject = re.search("(?<=\().+?(?=\))", self.configFileLine)
                 self.regularExpression = matchObject.group(0)
             elif matchObject2 != None:
-                #This one is of special kind, and parser will resolve it's regex
+                #This one is of special kind, and class parser will resolve that regex
                 self.isTableExpression = True
             else:
                 #now we have to form a list of nonterminal token expressions
@@ -71,7 +56,6 @@ class Token():
             #We have to form list of subtokens inside this token
             matches = re.findall(self.regexTokenName,self.configFileLine)
             del matches[0]
-            print(matches)
             self.subTokens = matches[:]
             #we don't need the name of first token
             #Wen cannot form regular expressions for nonterminals at this point.
@@ -80,20 +64,9 @@ class Token():
             #So we have to check that:
             for item in self.subTokens:
                 if self.tokenName == item:
-                    print('**************** ERROR ********************')
-                    print('Reccursive definition found in config file.')
-                    print('This parser DOES NOT support reccursive de-')
-                    print('finitions, therefore is unable to continue ')
-                    print('parsing. Terminating program execution...  ')
-                    print('*******************************************')
+                    print('parser---> ERROR:')
+                    print('\t\tReccursive definition found in config file.')
+                    print('\t\tThis parser DOES NOT support reccursive de-')
+                    print('\t\tfinitions, therefore is unable to continue ')
+                    print('\t\tparsing. Terminating program execution...  ')
                     sys.exit()
-
-#Testing class:
-#token = Token('<digits> := <mellon><partenon>')
-#token.formToken()
-#print('Is table expression: ' + str(token.isTableExpression))
-#print('Is terminal expression: ' + str(token.isTerminal))
-#print('Subtokens: ')
-#print(token.subTokens)
-#print('Name: ' + token.tokenName)
-#print('Regular expression: ' + token.regularExpression)
