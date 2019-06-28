@@ -16,7 +16,7 @@ tableRegex = {
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
     'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    #'veliki_grad' : myCrawler.regex,
+    'veliki_grad' : 'Barcelona|Madrid|Cacai'#myCrawler.regex,
 }
 
 class Parser():
@@ -25,6 +25,7 @@ class Parser():
     inputFileLines = []
     configFileLines = []
     parsingList = []
+    tableParsingList = []
 
     def __init__(self, inputFileName, configFileName):
         self.inputFileName = inputFileName
@@ -54,15 +55,57 @@ class Parser():
             print('parser---> ERROR: Problem with fetching config.bnf ')
             sys.exit()
 
+    def printAllTokens(self):
+        for item in self.parsingList:
+            item.printToken()
+
 
     def loadParsingList(self):
         for line in self.configFileLines:
-            self.parsingList.append(Token(line))
+            if line!= '':
+                self.parsingList.append(Token(line))
         #for item in self.parsingList:
             #print(item.configFileLine)
+
+    def formTableParsingList(self):
+        for name,regex in tableRegex.items():
+            line = '<'+name+'>:=regex('+regex+')'
+            self.tableParsingList.append(Token(line))
+        for item in self.tableParsingList:
+            item.formToken()
+
 
     def formTerminalRegexes(self):
         for item in self.parsingList:
             item.formToken()
         print('parser---> forming regexes for terminal tokens')
         time.sleep(1)
+        self.formTableParsingList()
+
+    def formNonTerminalRegexes(self):
+        print('parser---> forming regexes for non-terminal tokens')
+        for item in self.parsingList:
+            i=0
+            if item.isTerminal == False:
+                item.regularExpression += '('
+                for c in item.regexWizard:
+                    if c == 't':
+                        searchKey = item.subTokens[i]
+                        errorFlag = 0
+                        for temp in self.parsingList:
+                            errorFlag+=1
+                            if(temp.tokenName == searchKey):
+                                item.regularExpression += temp.regularExpression
+                                break
+                        if errorFlag == len(self.parsingList):
+                            print('parser---> ERROR: There is an error in given BNF form. \n\t\t  Missing some terminal token definitions!')
+                            print('\t\t  Terminating program execution...')
+                            sys.exit()
+                        i+=1
+                    elif c == 's':
+                        item.regularExpression += '\s'
+                    elif c == 'l':
+                        item.regularExpression+= ')'
+                        item.regularExpression += '|'
+                        item.regularExpression +='('
+                item.regularExpression += ')'

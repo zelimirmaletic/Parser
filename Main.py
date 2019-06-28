@@ -14,4 +14,7 @@ print('parser---> scanning EBNF')
 time.sleep(1)
 myParser.loadParsingList()
 myParser.formTerminalRegexes()
+myParser.formNonTerminalRegexes()
+myParser.printAllTokens()
+
 print('***************** Zelimir Maletic *******************')

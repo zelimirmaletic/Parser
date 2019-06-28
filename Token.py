@@ -11,12 +11,27 @@ class Token():
     tokenName = ""
     subTokens = []
     regularExpression = ''
+    regexWizard = ''
 
     regexTokenName = "(?!<)\w+(?=>)"
     regexNonTerminalTokenExpression = "(?!'| )\w+(?='|)"
 
     def __init__(self, configFileLine):
         self.configFileLine = configFileLine
+
+    #Functions that keeps track of spaces and | in nonterminal node definition
+    def formRegexWizard(self):
+        i = 0
+        for c in self.configFileLine:
+            if c == '<':
+                i+=1
+                if i>=2:
+                    self.regexWizard += 't'
+            elif c == ' ':
+                if i>=2:
+                    self.regexWizard += 's'
+            elif c == '|':
+                self.regexWizard += 'l'
 
     def formToken(self):
         # Determine token name
@@ -35,7 +50,7 @@ class Token():
 
             if matchObject1!= None:
                 #Now we have to form regular expression of this special kind of token
-                matchObject = re.search("(?<=\().+?(?=\))", self.configFileLine)
+                matchObject = re.search("(?<=\()(.+(\))*)*(?=\))", self.configFileLine)
                 self.regularExpression = matchObject.group(0)
             elif matchObject2 != None:
                 #This one is of special kind, and class parser will resolve that regex
@@ -55,9 +70,14 @@ class Token():
         else:
             #We have to form list of subtokens inside this token
             matches = re.findall(self.regexTokenName,self.configFileLine)
+            #we don't need the name of first token, that one is not in definition
             del matches[0]
+            #copy list
             self.subTokens = matches[:]
-            #we don't need the name of first token
+
+            #now we create a pattern that will help us later to make regex for nonterminal tokens
+            self.formRegexWizard()
+
             #Wen cannot form regular expressions for nonterminals at this point.
             #There will be another class that will have method to form these RegExes
             #THIS PARSER DOES NOT SUPPORT RECCURSIVE DEFINITION
@@ -70,3 +90,14 @@ class Token():
                     print('\t\tfinitions, therefore is unable to continue ')
                     print('\t\tparsing. Terminating program execution...  ')
                     sys.exit()
+
+    def printToken(self):
+        print('****************Token info************************')
+        print('Config file line: ' + self.configFileLine)
+        print('Token name: ' + self.tokenName)
+        print('Is this terminal token? : ' + str(self.isTerminal))
+        print('Is this table expression? :' + str(self.isTableExpression))
+        print('Subtokens: ')
+        print(self.subTokens)
+        print('Regex Wizard: ' + self.regexWizard)
+        print('Regular expression: ' + self.regularExpression)

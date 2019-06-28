@@ -1,9 +1,15 @@
 <sentence> := <subject> <predicate>
-<subject> := <article> <noun> <subject>
+<subject> := <article> <noun>|<noun>
+
+
 <predicate> := <verb> <directObject>
+
+
+
+
 <directObject> ::= <article> <noun>
-<tabela> := standardni_izraz
 <article> := THE | A
+
+
 <noun> := MAN | DOG
 <verb> := BITES | PETS
-<a> := regex(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)
