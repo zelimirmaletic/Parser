@@ -12,6 +12,7 @@ class Token():
     subTokens = []
     regularExpression = ''
     regexWizard = ''
+    wizardStrings = ''
 
     regexTokenName = "(?!<)\w+(?=>)"
     regexNonTerminalTokenExpression = "(?!'| )\w+(?='|)"
@@ -22,16 +23,23 @@ class Token():
     #Functions that keeps track of spaces and | in nonterminal node definition
     def formRegexWizard(self):
         i = 0
-        for c in self.configFileLine:
+        qoutesCounter = 0
+        for index,c in enumerate(self.configFileLine):
             if c == '<':
                 i+=1
                 if i>=2:
                     self.regexWizard += 't'
-            elif c == ' ':
-                if i>=2:
-                    self.regexWizard += 's'
+            #elif c == ' ':
+                #if i>=2:
+                    #self.regexWizard += 's'
             elif c == '|':
                 self.regexWizard += 'l'
+            elif c=='"':
+                qoutesCounter+=1
+                if qoutesCounter % 2 != 0:
+                    self.regexWizard += 'w'
+            #elif index!=len(self.configFileLine)-1 and c == '>' and self.configFileLine[index+1] == '<':
+            #        self.regexWizard += 'b'
 
     def formToken(self):
         # Determine token name
@@ -61,10 +69,12 @@ class Token():
                 del matchObject[0]
                 #now we have to form regex for this token
                 numberOfMatches = len(matchObject);
+                self.regularExpression += '('
                 for index,match in enumerate(matchObject):
                     self.regularExpression += match
                     if index!=numberOfMatches-1:
                         self.regularExpression+="|"
+                self.regularExpression += ')'
 
         #If not terminal then it's a nonterminal, this means that it has some subtokens
         else:
@@ -74,7 +84,9 @@ class Token():
             del matches[0]
             #copy list
             self.subTokens = matches[:]
-
+            wizardStringRegex = '\"[^><\"]+(?=\")'
+            matches = re.findall(wizardStringRegex,self.configFileLine)
+            self.wizardStrings = matches[:]
             #now we create a pattern that will help us later to make regex for nonterminal tokens
             self.formRegexWizard()
 
@@ -100,4 +112,6 @@ class Token():
         print('Subtokens: ')
         print(self.subTokens)
         print('Regex Wizard: ' + self.regexWizard)
+        print('wizardStrings: ')
+        print(self.wizardStrings)
         print('Regular expression: ' + self.regularExpression)

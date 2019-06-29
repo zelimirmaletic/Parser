@@ -1,15 +1,4 @@
-<sentence> := <subject> <predicate>
-<subject> := <article> <noun>|<noun>
-
-
-<predicate> := <verb> <directObject>
-
-
-
-
-<directObject> ::= <article> <noun>
-<article> := THE | A
-
-
-<noun> := MAN | DOG
-<verb> := BITES | PETS
+<ANIMAL> := <cat>|" " <frog> | <dog>|<frog>
+<cat> := cat | katze
+<dog> := dog | hund
+<frog> := frog | frosh

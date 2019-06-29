@@ -19,6 +19,29 @@ tableRegex = {
     'veliki_grad' : 'Barcelona|Madrid|Cacai'#myCrawler.regex,
 }
 
+specialRegexChars = ['(' , ')' , '.' , '[' , ']' , '*' , '+', '\\' , '/' ]
+
+
+def checkSpecialCharacter( character ):
+    for item in specialRegexChars:
+        if(item == character):
+            return True
+    return False
+
+def formRegexForWizardString(string):
+    regex = ''
+    for char in string:
+        if char == ' ':
+            regex += '\s'
+        elif checkSpecialCharacter(char) == True:
+            regex += '\\'
+            regex += char
+        elif char != '"':
+            regex += char
+    return regex
+
+
+
 class Parser():
     inputFileName = ''
     configFileName = ''
@@ -58,6 +81,8 @@ class Parser():
     def printAllTokens(self):
         for item in self.parsingList:
             item.printToken()
+        #for item in self.tableParsingList:
+        #    item.printToken()
 
 
     def loadParsingList(self):
@@ -85,7 +110,8 @@ class Parser():
     def formNonTerminalRegexes(self):
         print('parser---> forming regexes for non-terminal tokens')
         for item in self.parsingList:
-            i=0
+            i = 0
+            wizardStringCounter = 0
             if item.isTerminal == False:
                 item.regularExpression += '('
                 for c in item.regexWizard:
@@ -102,10 +128,16 @@ class Parser():
                             print('\t\t  Terminating program execution...')
                             sys.exit()
                         i+=1
-                    elif c == 's':
-                        item.regularExpression += '\s'
+                    #elif c == 's':
+                        #item.regularExpression += '\s'
                     elif c == 'l':
-                        item.regularExpression+= ')'
                         item.regularExpression += '|'
-                        item.regularExpression +='('
+                    #elif c == 'b':
+                    #    item.regularExpression += ')('
+                    elif c == 'w':
+                        item.regularExpression += '('
+                        formedRegex = formRegexForWizardString(item.wizardStrings[wizardStringCounter])
+                        item.regularExpression += formedRegex
+                        item.regularExpression += ')'
+                        wizardStringCounter += 1
                 item.regularExpression += ')'

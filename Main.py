@@ -2,10 +2,14 @@ from Parser import Parser
 import sys
 import  time
 
-# Create variables for file names defined in command line arguments
-inputFileName = sys.argv[1]
-configFileName = sys.argv[2]
 
+try:
+    # Create variables for file names defined in command line arguments
+    inputFileName = sys.argv[1]
+    configFileName = sys.argv[2]
+except IndexError:
+    print('There is a problem with comand line argumnets!')
+    sys.exit()
 print('******************** EBNF PARSER ********************')
 myParser = Parser(inputFileName, configFileName)
 myParser.loadInputFile()
