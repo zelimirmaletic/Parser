@@ -23,3 +23,14 @@
 <article> := THE | "A"
 <noun> := "MAN" | "DOG"
 <verb> := "BITES" | "PETS"
+
+
+
+<sentence> := <subject>" "<predicate>
+<subject> := <article>" "<noun>|<noun>
+<predicate> := <verb>" "<directObject>
+<directObject> ::= <article>" "<noun>
+<article> := THE | "A"
+<noun> := "MAN" | "DOG"
+<verb> := "BITES" | "PETS"
+<veliki_grad> := standardni_izraz

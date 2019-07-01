@@ -12,7 +12,7 @@ import sys
 #After this line we have formed regular expression for matching big cities
 #Dictionary for predefined expressions from the given table
 tableRegex = {
-    'veliki_grad' : 'Barcelona|Madrid|Cacai', #myCrawler.regex
+    'veliki_grad' : 'Barcelona|Paris|London',#myCrawler.regex,
     'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
@@ -111,6 +111,7 @@ class Parser():
 
     def formNonTerminalRegexes(self):
         print('parser---> Forming regexes for non-terminal tokens')
+        time.sleep(0.5)
         for item in self.parsingList:
             i = 0
             wizardStringCounter = 0
@@ -145,9 +146,37 @@ class Parser():
                         wizardStringCounter += 1
                 item.regularExpression += ')'
 
+
+
+
     def parse(self):
         #first we have to open(crete) XML File
         with open("output.xml", 'w') as outputStream:
+            #Define recursive functoin for generating parse tree
+            def diveToBottom(self,tokenName, inputLine):
+                for token in self.parsingList:
+                    if token.tokenName==tokenName and token.isTerminal:
+                        #This part below is for writing logic
+                        outputStream.write('\n')
+                        outputStream.write('<' + token.tokenName + '>')
+                        #outputStream.write('\n')
+                        match = re.search(token.regularExpression,inputLine)
+                        outputStream.write(match.group())
+                        #outputStream.write('\n')
+                        outputStream.write('</' + token.tokenName + '>\n')
+                        return
+                    elif token.tokenName==tokenName and token.isTerminal == False:
+                        for subtoken in token.subTokens:
+                            for item in self.parsingList:
+                                if subtoken == item.tokenName and item.isTerminal:
+                                    diveToBottom(self, subtoken, inputLine)
+                                elif subtoken == item.tokenName and item.isTerminal==False:
+                                    outputStream.write('\n')
+                                    outputStream.write('<' + subtoken + '>')
+                                    diveToBottom(self, subtoken, inputLine)
+                                    outputStream.write('</' + subtoken + '>\n')
+
+
             outputStream.write('<root>')
             #We have to search tokens from top to bottom, so we reverse parsingList
             self.parsingList.reverse()
@@ -157,19 +186,18 @@ class Parser():
                     match = re.match(token.regularExpression, inputLine)
                     if match != None and inputLine == match.group():
                         flagError = False
-                        #This part below is for writing logic
-                        outputStream.write('\n')
-                        outputStream.write('\t')
-                        outputStream.write('<' + token.tokenName + '>')
-                        outputStream.write('\n')
-                        outputStream.write('\t')
-                        outputStream.write(inputLine)
-                        outputStream.write('\n')
-                        outputStream.write('\t')
-                        outputStream.write('</' + token.tokenName + '>\n')
+                        #call recursive function for writing
+                        if token.isTerminal == True:
+                            diveToBottom(self, token.tokenName, inputLine)
+                        else:
+                            outputStream.write('\n')
+                            outputStream.write('<' + token.tokenName + '>')
+                            diveToBottom(self, token.tokenName, inputLine)
+                            outputStream.write('</' + token.tokenName + '>\n')
+
                 if(flagError==True):
                     print('parser---> PARSING ERROR: Invalid input on line ' + str(index+1))
-                    print('           (The line: [' + inputLine + '] cannot be parsed with given grammar.')
+                    print('           (The line: [' + inputLine + '] cannot be parsed with the given grammar.')
 
 
             outputStream.write('</root>')

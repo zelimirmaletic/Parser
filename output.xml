@@ -1,5 +1,21 @@
 <root>
-	<userFullData>
-	a5-a3/Zelimir Maletic(17.07.1998.)
-	</userFullData>
+<sentence>
+<subject>
+<article>THE</article>
+
+<noun>MAN</noun>
+
+<noun>MAN</noun>
+</subject>
+
+<predicate>
+<verb>PETS</verb>
+
+<directObject>
+<article>THE</article>
+
+<noun>MAN</noun>
+</directObject>
+</predicate>
+</sentence>
 </root>

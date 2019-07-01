@@ -1,7 +1,7 @@
-<userFullData> := <userID> "/" <userFirstName> " " <userLastName> "(" <dateOfBirth> ")"
-<userID> := <letter> <digit> "-" <letter> <digit>
-<dateOfBirth> := <digit><digit>"."<digit><digit>"."<digit><digit><digit><digit>"."
-<userFirstName> := regex([A-Z][a-z]+)
-<userLastName> := regex([A-Z][a-z]+)
-<letter>:= a|b|c
-<digit> := 0|1|2|3|4|5|6|7|8|9
+<sentence> := <subject>" "<predicate>
+<subject> := <article>" "<noun>|<noun>
+<predicate> := <verb>" "<directObject>
+<directObject> ::= <article>" "<noun>
+<article> := "THE" | "A"
+<noun> := "MAN" | "DOG"
+<verb> := "BITES" | "PETS"
