@@ -12,11 +12,11 @@ import sys
 #After this line we have formed regular expression for matching big cities
 #Dictionary for predefined expressions from the given table
 tableRegex = {
+    'veliki_grad' : 'Barcelona|Madrid|Cacai', #myCrawler.regex
     'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
     'brojevna_konstanta' : "(\d)*(\.\d*)*",
-    'veliki_grad' : 'Barcelona|Madrid|Cacai'#myCrawler.regex,
 }
 
 specialRegexChars = ['(' , ')' , '.' , '[' , ']' , '*' , '+', '\\' , '/' ]
@@ -59,7 +59,7 @@ class Parser():
             with open(self.inputFileName) as inputFileObject:
                 for line in inputFileObject:
                     self.inputFileLines.append(line.rstrip())
-                print('parser---> input file loaded')
+                print('parser---> Input file loaded')
                 time.sleep(1)
         except FileNotFoundError:
             print('parser---> ERROR: Problem with fetching input.txt')
@@ -72,7 +72,7 @@ class Parser():
                     self.configFileLines.append(line.rstrip())
                 #reverse list because we want to start from terminal tokens
                 self.configFileLines.reverse()
-                print('parser---> config file loaded')
+                print('parser---> Config file loaded')
                 time.sleep(1)
         except FileNotFoundError:
             print('parser---> ERROR: Problem with fetching config.bnf ')
@@ -81,34 +81,36 @@ class Parser():
     def printAllTokens(self):
         for item in self.parsingList:
             item.printToken()
-        #for item in self.tableParsingList:
-        #    item.printToken()
-
 
     def loadParsingList(self):
         for line in self.configFileLines:
             if line!= '':
                 self.parsingList.append(Token(line))
-        #for item in self.parsingList:
-            #print(item.configFileLine)
 
     def formTableParsingList(self):
         for name,regex in tableRegex.items():
-            line = '<'+name+'>:=regex('+regex+')'
+            line = '<' + name + '>:=regex(('+ regex + '))'
             self.tableParsingList.append(Token(line))
         for item in self.tableParsingList:
             item.formToken()
 
-
     def formTerminalRegexes(self):
+        print('parser---> Forming regexes for given table definitions')
+        self.formTableParsingList()
+        time.sleep(0.5)
+
         for item in self.parsingList:
             item.formToken()
-        print('parser---> forming regexes for terminal tokens')
-        time.sleep(1)
-        self.formTableParsingList()
+            if item.isTableExpression == True:
+                for index,token in enumerate(self.tableParsingList):
+                    item.regularExpression += token.regularExpression
+                    if index != len(self.tableParsingList)-1:
+                        item.regularExpression += '|'
+        print('parser---> Forming regexes for terminal tokens')
+        time.sleep(0.5)
 
     def formNonTerminalRegexes(self):
-        print('parser---> forming regexes for non-terminal tokens')
+        print('parser---> Forming regexes for non-terminal tokens')
         for item in self.parsingList:
             i = 0
             wizardStringCounter = 0
@@ -124,6 +126,7 @@ class Parser():
                                 item.regularExpression += temp.regularExpression
                                 break
                         if errorFlag == len(self.parsingList):
+                            print('parser---> BNF ERROR LINE:' + item.configFileLine)
                             print('parser---> ERROR: There is an error in given BNF form. \n\t\t  Missing some terminal token definitions!')
                             print('\t\t  Terminating program execution...')
                             sys.exit()
@@ -141,3 +144,32 @@ class Parser():
                         item.regularExpression += ')'
                         wizardStringCounter += 1
                 item.regularExpression += ')'
+
+    def parse(self):
+        #first we have to open(crete) XML File
+        with open("output.xml", 'w') as outputStream:
+            outputStream.write('<root>')
+            #We have to search tokens from top to bottom, so we reverse parsingList
+            self.parsingList.reverse()
+            for index,inputLine in enumerate(self.inputFileLines):
+                flagError = True
+                for token in self.parsingList:
+                    match = re.match(token.regularExpression, inputLine)
+                    if match != None and inputLine == match.group():
+                        flagError = False
+                        #This part below is for writing logic
+                        outputStream.write('\n')
+                        outputStream.write('\t')
+                        outputStream.write('<' + token.tokenName + '>')
+                        outputStream.write('\n')
+                        outputStream.write('\t')
+                        outputStream.write(inputLine)
+                        outputStream.write('\n')
+                        outputStream.write('\t')
+                        outputStream.write('</' + token.tokenName + '>\n')
+                if(flagError==True):
+                    print('parser---> PARSING ERROR: Invalid input on line ' + str(index+1))
+                    print('           (The line: [' + inputLine + '] cannot be parsed with given grammar.')
+
+
+            outputStream.write('</root>')

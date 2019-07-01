@@ -96,7 +96,7 @@ class Token():
             #So we have to check that:
             for item in self.subTokens:
                 if self.tokenName == item:
-                    print('parser---> ERROR:')
+                    print('parser---> EBNF ERROR LINE:'+self.configFileLine)
                     print('\t\tReccursive definition found in config file.')
                     print('\t\tThis parser DOES NOT support reccursive de-')
                     print('\t\tfinitions, therefore is unable to continue ')

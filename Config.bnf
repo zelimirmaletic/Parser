@@ -3,3 +3,23 @@
 <indexNumber> := regex(\d{4,5}\/\d{2})
 <digit> := 1|2|3|4|5|6|7|8|9|0
 <letter> := a|b|c|d|e|f|g
+
+
+<userFullData> := <userID> "----" <userFirstName> " " <userLastName> "(" <dateOfBirth> ")"
+<userID> := <letter> <digit> "-" <letter> <digit>
+<dateOfBirth> := <digit> <digit> "." <digit> <digit> "." <digitZero> <digit> <digit> <digit>"."
+<userFirstName> := regex([A-Z][a-z]+)
+<userLastName> := regex([A-Z][a-z]+)
+<standardniIzraz> := standardni_izraz
+<letter>:= a|b|c
+<digitZero> := "0" | <digit>
+<digit> := 0|1|2|3|4|5|6|7|8|9
+
+
+<sentence> := <subject>" "<predicate>
+<subject> := <article>" "<noun>|<noun>
+<predicate> := <verb>" "<directObject>
+<directObject> ::= <article>" "<noun>
+<article> := THE | "A"
+<noun> := "MAN" | "DOG"
+<verb> := "BITES" | "PETS"
