@@ -1,21 +1,13 @@
 <root>
-<sentence>
-<subject>
-<article>THE</article>
+<personID>
+<twodigit>
+<digit>5</digit>
 
-<noun>MAN</noun>
+<digit>5</digit>
+</twodigit>
 
-<noun>MAN</noun>
-</subject>
+<letter>a</letter>
 
-<predicate>
-<verb>PETS</verb>
-
-<directObject>
-<article>THE</article>
-
-<noun>MAN</noun>
-</directObject>
-</predicate>
-</sentence>
+<indexNumber>11125/18</indexNumber>
+</personID>
 </root>

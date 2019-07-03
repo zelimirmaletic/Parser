@@ -34,3 +34,19 @@
 <noun> := "MAN" | "DOG"
 <verb> := "BITES" | "PETS"
 <veliki_grad> := standardni_izraz
+
+
+
+<InputElement>:= <WhiteSpace> | <Comment> | <Token>
+<WhiteSpace> := regex(\s)
+<Comment>:= regex(#\w+)
+<Token> := <Identifier> | <Keyword> | <Literal> | <Separator> | <Operator>
+<Identifier> := <Letter> | <Letter><Letter> | <Letter><Letter><Digit>
+<Keyword> := boolean|else|if|int|main|void|while
+<Literal>:= <Boolean> | <Integer>
+<Boolean>:= true|false
+<Integer>:= <Digit>|<Digit><Digit>
+<Separator>:= "("|")"|"{"|"}"|":"|"."
+<Operator>:= + | - | * | / | =
+<Letter> := regex([a-z]|[A-Z])
+<Digit> := regex(\d)

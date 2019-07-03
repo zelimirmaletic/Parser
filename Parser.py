@@ -157,14 +157,15 @@ class Parser():
                 for token in self.parsingList:
                     if token.tokenName==tokenName and token.isTerminal:
                         #This part below is for writing logic
-                        outputStream.write('\n')
-                        outputStream.write('<' + token.tokenName + '>')
-                        #outputStream.write('\n')
                         match = re.search(token.regularExpression,inputLine)
-                        outputStream.write(match.group())
-                        #outputStream.write('\n')
-                        outputStream.write('</' + token.tokenName + '>\n')
-                        return
+                        if match!= None:
+                            outputStream.write('\n')
+                            outputStream.write('<' + token.tokenName + '>')
+                            #outputStream.write('\n')
+                            outputStream.write(match.group())
+                            #outputStream.write('\n')
+                            outputStream.write('</' + token.tokenName + '>\n')
+                            return
                     elif token.tokenName==tokenName and token.isTerminal == False:
                         for subtoken in token.subTokens:
                             for item in self.parsingList:
@@ -194,6 +195,7 @@ class Parser():
                             outputStream.write('<' + token.tokenName + '>')
                             diveToBottom(self, token.tokenName, inputLine)
                             outputStream.write('</' + token.tokenName + '>\n')
+                    break
 
                 if(flagError==True):
                     print('parser---> PARSING ERROR: Invalid input on line ' + str(index+1))
