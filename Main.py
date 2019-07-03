@@ -10,6 +10,7 @@ try:
 except IndexError:
     print('There is a problem with comand line argumnets!')
     sys.exit()
+
 print('*************************************************************************')
 print('*                    EBNF  P A R S E R                                  *')
 print('*************************************************************************')

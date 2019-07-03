@@ -1,35 +1,35 @@
 import re
 import sys
 
-
-
 class Token():
     # Token data
     isTerminal = False
     isTableExpression = False
-    configFileLine = ""
-    tokenName = ""
+    configFileLine = ''
+    tokenName = ''
     subTokens = []
     regularExpression = ''
     regexWizard = ''
     wizardStrings = ''
 
+    #These regexes will help to extract name and nonterminal expression in definition.
     regexTokenName = "(?!<)\w+(?=>)"
     regexNonTerminalTokenExpression = "(?!'| )\w+(?='|)"
 
+    #__init__ uses just input config line as input
     def __init__(self, configFileLine):
         self.configFileLine = configFileLine
 
     #Functions that keeps track of spaces and | in nonterminal node definition
     def formRegexWizard(self):
-        i = 0
+        i = 0 #make sure not to count first token since it is not part of definition
         qoutesCounter = 0
         for index,c in enumerate(self.configFileLine):
             if c == '<':
                 i+=1
                 if i>=2:
                     self.regexWizard += 't'
-            #elif c == ' ':
+            #elif c == ' ': !This functionality was dropped!
                 #if i>=2:
                     #self.regexWizard += 's'
             elif c == '|':
@@ -39,7 +39,7 @@ class Token():
                 if qoutesCounter % 2 != 0:
                     self.regexWizard += 'w'
             #elif index!=len(self.configFileLine)-1 and c == '>' and self.configFileLine[index+1] == '<':
-            #        self.regexWizard += 'b'
+            #        self.regexWizard += 'b' !This was dropped because of redefinition!
 
     def formToken(self):
         # Determine token name
@@ -50,7 +50,7 @@ class Token():
         if countBrackets == 1:
             self.isTerminal = True
             # This token is terminal therefore has no subtokens
-            # Here the lists subToken stays empty
+            # Here the lists subToken stays empty!
 
             # We have to check wether a token is of a special form AKA one from the given table
             matchObject1=re.search("regex\(", self.configFileLine)
@@ -60,9 +60,11 @@ class Token():
                 #Now we have to form regular expression of this special kind of token
                 matchObject = re.search("(?<=\()(.+(\))*)*(?=\))", self.configFileLine)
                 self.regularExpression = matchObject.group(0)
+
             elif matchObject2 != None:
                 #This one is of special kind, and class parser will resolve that regex
                 self.isTableExpression = True
+
             else:
                 #now we have to form a list of nonterminal token expressions
                 matchObject = re.findall(self.regexNonTerminalTokenExpression, self.configFileLine )
@@ -72,7 +74,7 @@ class Token():
                 self.regularExpression += '('
                 for index,match in enumerate(matchObject):
                     self.regularExpression += match
-                    if index!=numberOfMatches-1:
+                    if index != numberOfMatches-1:
                         self.regularExpression+="|"
                 self.regularExpression += ')'
 
@@ -80,19 +82,21 @@ class Token():
         else:
             #We have to form list of subtokens inside this token
             matches = re.findall(self.regexTokenName,self.configFileLine)
-            #we don't need the name of first token, that one is not in definition
+            #we don't need the name of first token, that one is not in the definition
             del matches[0]
-            #copy list
+            #copy match list subtokens list
             self.subTokens = matches[:]
             wizardStringRegex = '\"[^><\"]+(?=\")'
             matches = re.findall(wizardStringRegex,self.configFileLine)
+            #wizardStrings are string in definition that are between quotes
             self.wizardStrings = matches[:]
-            #now we create a pattern that will help us later to make regex for nonterminal tokens
+            #now we create a pattern that will help us later to build regex for nonterminal tokens
             self.formRegexWizard()
 
-            #Wen cannot form regular expressions for nonterminals at this point.
+            #We cannot form regular expressions for nonterminals at this point.
             #There will be another class that will have method to form these RegExes
-            #THIS PARSER DOES NOT SUPPORT RECCURSIVE DEFINITION
+
+            # !THIS PARSER DOES NOT SUPPORT RECCURSIVE DEFINITION!
             #So we have to check that:
             for item in self.subTokens:
                 if self.tokenName == item:

@@ -6,19 +6,19 @@ import sys
 
 
 #Scrape web site and form regex for veliki_grad token
-#myCrawler = Crawler()
-#myCrawler.scrapeWebLink()
-#myCrawler.formRegex()
+myCrawler = Crawler()
+myCrawler.scrapeWebLink()
+myCrawler.formRegex()
 #After this line we have formed regular expression for matching big cities
 #Dictionary for predefined expressions from the given table
 tableRegex = {
-    'veliki_grad' : 'Barcelona|Paris|London',#myCrawler.regex,
+    'veliki_grad' : myCrawler.regex,
     'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
     'brojevna_konstanta' : "(\d)*(\.\d*)*",
 }
-
+#These ones will have to be replaced in regular expression later
 specialRegexChars = ['(' , ')' , '.' , '[' , ']' , '*' , '+', '\\' , '/' ]
 
 
@@ -27,7 +27,8 @@ def checkSpecialCharacter( character ):
         if(item == character):
             return True
     return False
-
+#This function just makes sure that special characters in wizardStrings are replaced
+#with escaped characters in regularExpression
 def formRegexForWizardString(string):
     regex = ''
     for char in string:
@@ -53,7 +54,7 @@ class Parser():
     def __init__(self, inputFileName, configFileName):
         self.inputFileName = inputFileName
         self.configFileName = configFileName
-
+    #We have to load the data from input file
     def loadInputFile(self):
         try:
             with open(self.inputFileName) as inputFileObject:
@@ -82,6 +83,7 @@ class Parser():
         for item in self.parsingList:
             item.printToken()
 
+    #This function will create a list of tokens
     def loadParsingList(self):
         for line in self.configFileLines:
             if line!= '':
