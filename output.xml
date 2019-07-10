@@ -1,13 +1,8 @@
-<root>
-<personID>
-<twodigit>
-<digit>5</digit>
+<?xml version="1.0" encoding="UTF-8"?><root>
 
-<digit>5</digit>
-</twodigit>
-
-<letter>a</letter>
-
-<indexNumber>11125/18</indexNumber>
-</personID>
+<KOKO>
+<digit>2</digit>
+<city>65287548</city>
+</KOKO>
 </root>
+

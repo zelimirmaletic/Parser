@@ -86,6 +86,8 @@ class Token():
             del matches[0]
             #copy match list subtokens list
             self.subTokens = matches[:]
+            #We have to remove duplicates
+
             wizardStringRegex = '\"[^><\"]+(?=\")'
             matches = re.findall(wizardStringRegex,self.configFileLine)
             #wizardStrings are string in definition that are between quotes

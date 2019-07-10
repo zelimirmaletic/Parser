@@ -1,5 +1,3 @@
-<personID> := <twodigit><letter><indexNumber>
-<twodigit> := <digit><digit>
-<indexNumber> := regex(\d{4,5}\/\d{2})
-<digit> := 1|2|3|4|5|6|7|8|9|0
-<letter> := a|b|c|d|e|f|g
+<KOKO>:=<digit><city><digit>
+<city>:= standardni_izraz
+<digit>:=1|2|3

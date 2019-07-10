@@ -16,7 +16,7 @@ tableRegex = {
     'mejl_adresa' : '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
     'broj_telefona' : "(\+387)*(\d){2,3}(\/|-)*(\d){3}(\/|-)*(\d){3}",
     'web_link' : "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)",
-    'brojevna_konstanta' : "(\d)*(\.\d*)*",
+    'brojevna_konstanta' : "(\d)*(\.\d*)*"
 }
 #These ones will have to be replaced in regular expression later
 specialRegexChars = ['(' , ')' , '.' , '[' , ']' , '*' , '+', '\\' , '/' ]
@@ -41,6 +41,14 @@ def formRegexForWizardString(string):
             regex += char
     return regex
 
+def stripBegining(len, string):
+    i=0
+    temp = ""
+    for index,char in enumerate(string):
+        if(i>len-1):
+            temp += char
+        i+=1
+    return temp
 
 
 class Parser():
@@ -163,24 +171,31 @@ class Parser():
                         if match!= None:
                             outputStream.write('\n')
                             outputStream.write('<' + token.tokenName + '>')
-                            #outputStream.write('\n')
                             outputStream.write(match.group())
-                            #outputStream.write('\n')
-                            outputStream.write('</' + token.tokenName + '>\n')
-                            return
-                    elif token.tokenName==tokenName and token.isTerminal == False:
+                            outputStream.write('</' + token.tokenName + '>')
+                        return len(match.group(0))
+
+                    elif token.tokenName==tokenName and token.isTerminal != True:
+                        #for subtoken in list(dict.fromkeys(token.subTokens))
                         for subtoken in token.subTokens:
                             for item in self.parsingList:
                                 if subtoken == item.tokenName and item.isTerminal:
-                                    diveToBottom(self, subtoken, inputLine)
+                                    match = re.search(item.regularExpression,inputLine)
+                                    if match!=None:
+                                        num = diveToBottom(self, subtoken, inputLine)
+                                        inputLine=stripBegining(num, inputLine)
                                 elif subtoken == item.tokenName and item.isTerminal==False:
                                     outputStream.write('\n')
                                     outputStream.write('<' + subtoken + '>')
-                                    diveToBottom(self, subtoken, inputLine)
-                                    outputStream.write('</' + subtoken + '>\n')
+                                    match = re.search(item.regularExpression,inputLine)
+                                    if match!=None:
+                                        diveToBottom(self, subtoken, match.group(0))
+                                    outputStream.write('\n</' + subtoken + '>')
 
 
-            outputStream.write('<root>')
+
+            outputStream.write('<?xml version="1.0" encoding="UTF-8"?>')
+            outputStream.write('<root>\n')
             #We have to search tokens from top to bottom, so we reverse parsingList
             self.parsingList.reverse()
             for index,inputLine in enumerate(self.inputFileLines):
@@ -189,19 +204,22 @@ class Parser():
                     match = re.match(token.regularExpression, inputLine)
                     if match != None and inputLine == match.group():
                         flagError = False
-                        #call recursive function for writing
+                        #call recursive function for non terminal token for writing
                         if token.isTerminal == True:
-                            diveToBottom(self, token.tokenName, inputLine)
+                            outputStream.write('\n')
+                            outputStream.write('<' + token.tokenName + '>\n')
+                            outputStream.write(inputLine + '\n')
+                            outputStream.write('</' + token.tokenName + '>')
                         else:
                             outputStream.write('\n')
                             outputStream.write('<' + token.tokenName + '>')
                             diveToBottom(self, token.tokenName, inputLine)
-                            outputStream.write('</' + token.tokenName + '>\n')
-                    break
+                            outputStream.write('\n</' + token.tokenName + '>\n')
+                        break
 
                 if(flagError==True):
                     print('parser---> PARSING ERROR: Invalid input on line ' + str(index+1))
                     print('           (The line: [' + inputLine + '] cannot be parsed with the given grammar.')
 
 
-            outputStream.write('</root>')
+            outputStream.write('</root>\n\n')
